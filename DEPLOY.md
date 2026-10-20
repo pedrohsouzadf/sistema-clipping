@@ -26,7 +26,11 @@ Workers & Pages → Create → Pages → Connect to Git → escolha o repositór
 | Variável `VITE_SUPABASE_ANON_KEY` | anon key (nunca a service_role) |
 | Variável `NODE_VERSION` | `22` |
 
-`public/_redirects` garante que rotas como `/clientes` abram direto.
+O arquivo `wrangler.jsonc` (já no repositório) publica a pasta `dist` e faz rotas como
+`/clientes` abrirem direto (modo SPA). O comando de deploy é `npx wrangler deploy`, e o
+`name` do arquivo deve ser igual ao nome do projeto na Cloudflare.
+
+As variáveis `VITE_*` precisam estar em **Build variables**, pois são lidas na hora do build.
 
 ## 3. Ajustar o Supabase
 Authentication → URL Configuration:
