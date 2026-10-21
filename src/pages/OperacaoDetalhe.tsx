@@ -309,6 +309,7 @@ function PropostaForm({ item, prop, fornecedores, onClose, onSaved, onFornecedor
       {novo && (
         <OrgForm
           defaultPapel="fornecedor"
+          semWoba
           onClose={() => setNovo(false)}
           onSaved={(o) => { setNovo(false); onFornecedorCriado(); setD((x) => ({ ...x, fornecedor_id: o.id })) }}
         />

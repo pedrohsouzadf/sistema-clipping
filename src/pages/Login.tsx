@@ -28,7 +28,7 @@ export default function Login() {
         <div className="brand brand-lg">
           <span className="brand-mark" aria-hidden />
           <span>
-            <b>Clip</b> CRM
+            <b>Clip</b> Gestão
           </span>
         </div>
         <p className="muted">Funil comercial e processo padrão da Clip.</p>

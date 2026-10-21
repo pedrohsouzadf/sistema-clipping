@@ -33,7 +33,7 @@ function Setup() {
   return (
     <div className="center-screen">
       <div className="card setup">
-        <h1>Clip CRM</h1>
+        <h1>Clip Gestão</h1>
         <p>O app ainda não está conectado ao Supabase.</p>
         <ol>
           <li>Crie um projeto em supabase.com.</li>
@@ -83,7 +83,7 @@ export default function App() {
         <div className="brand">
           <span className="brand-mark" aria-hidden />
           <span>
-            <b>Clip</b> CRM
+            <b>Clip</b> Gestão
           </span>
         </div>
         <MenuLateral />
