@@ -114,6 +114,7 @@ export default function Parceiros() {
       {novo && (
         <OrgForm
           defaultPapel="fornecedor"
+          semWoba
           onClose={() => setNovo(false)}
           onSaved={async (o: Organizacao) => {
             setNovo(false)

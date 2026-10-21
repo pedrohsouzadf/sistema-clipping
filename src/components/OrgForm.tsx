@@ -63,11 +63,14 @@ export default function OrgForm({
   onClose,
   onSaved,
   defaultPapel,
+  semWoba,
 }: {
   org?: Organizacao | null
   onClose: () => void
   onSaved: (o: Organizacao) => void
   defaultPapel?: string
+  /** esconde "Atendida pela Woba?" (ex.: Rede de parceiros); o valor existente é preservado */
+  semWoba?: boolean
 }) {
   const [d, setD] = useState<Draft>(() => {
     const base = toDraft(org)
@@ -137,12 +140,14 @@ export default function OrgForm({
       }
     >
       <div className="grid">
-        <Field label="Nome *" span={2}>
+        <Field label="Nome *" span={semWoba ? 3 : 2}>
           <input value={d.nome} onChange={(e) => set('nome', e.target.value)} autoFocus />
         </Field>
-        <Field label="Atendida pela Woba?" hint="Sim = a Clip só entra via demanda da Woba">
-          <Select value={d.atendida_woba} onChange={(e) => set('atendida_woba', e.target.value)} options={WOBA_STATUS} />
-        </Field>
+        {!semWoba && (
+          <Field label="Atendida pela Woba?" hint="Sim = a Clip só entra via demanda da Woba">
+            <Select value={d.atendida_woba} onChange={(e) => set('atendida_woba', e.target.value)} options={WOBA_STATUS} />
+          </Field>
+        )}
 
         <div className="field span-3">
           <span className="field-label">Tipo</span>
