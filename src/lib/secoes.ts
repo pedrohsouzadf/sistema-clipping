@@ -43,7 +43,13 @@ export const SECOES: Secao[] = [
       { to: '/ocorrencias', rotulo: 'Histórico de ocorrências', prefixos: ['/ocorrencias'] },
     ],
   },
-  { to: '/parceiros', titulo: 'Rede de parceiros', prefixos: ['/parceiros'] },
+  {
+    to: '/parceiros', titulo: 'Rede de parceiros', prefixos: ['/parceiros', '/prestadores'],
+    abas: [
+      { to: '/parceiros', rotulo: 'Fornecedores', prefixos: ['/parceiros'] },
+      { to: '/prestadores', rotulo: 'Prestadores de serviço', prefixos: ['/prestadores'] },
+    ],
+  },
   {
     to: '/financeiro', titulo: 'Financeiro por contrato', prefixos: ['/financeiro'],
     abas: [

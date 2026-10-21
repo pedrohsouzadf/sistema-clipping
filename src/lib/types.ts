@@ -672,3 +672,23 @@ export interface Lancamento {
   fornecedor?: { id: string; nome: string | null } | null
   servico?: { id: string; nome: string } | null
 }
+
+export const OFICIOS = [
+  'Pintor', 'Eletricista', 'Bombeiro hidráulico', 'Pedreiro', 'Marceneiro', 'Serralheiro', 'Gesseiro', 'Instalador de ar-condicionado', 'Vidraceiro', 'Chaveiro', 'Outro',
+] as const
+
+export interface Prestador {
+  id: string
+  nome: string
+  oficio: string
+  telefone: string | null
+  email: string | null
+  cidades: string[]
+  disponibilidade: (typeof DISPONIBILIDADES)[number]
+  disponivel_a_partir: string | null
+  nota: number | null
+  valor_referencia: string | null
+  indicado_por: string | null
+  observacoes: string | null
+  created_at: string
+}

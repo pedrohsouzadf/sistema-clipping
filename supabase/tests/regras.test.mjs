@@ -23,6 +23,7 @@ await db.exec(fs.readFileSync(here('../migrations/0006_modelo_fase1.sql'), 'utf8
 await db.exec(fs.readFileSync(here('../migrations/0007_clientes_unidades_contratos.sql'), 'utf8'))
 await db.exec(fs.readFileSync(here('../migrations/0008_operacao_facilities.sql'), 'utf8'))
 await db.exec(fs.readFileSync(here('../migrations/0009_financeiro_contratos.sql'), 'utf8'))
+await db.exec(fs.readFileSync(here('../migrations/0010_prestadores.sql'), 'utf8'))
 await db.exec(`grant all on all tables in schema public to authenticated; grant execute on all functions in schema public to authenticated;`)
 await db.exec(seed)
 
@@ -560,6 +561,45 @@ console.log('\nFinanceiro por contrato')
   await raw()
 }
 
+// ---- prestadores de serviço (migration 0010)
+console.log('\nPrestadores de serviço')
+{
+  const uCom = (await db.query(`select id from auth.users where email='comercial@clip.com'`)).rows[0].id
+  const uFac = (await db.query(`select id from auth.users where email='facilities@clip.com'`)).rows[0].id
+  const uFin = (await db.query(`select id from auth.users where email='financeiro@clip.com'`)).rows[0].id
+  const uGes = (await db.query(`select id from auth.users where email='rafael@clip.com'`)).rows[0].id
+
+  await asUser(uFac)
+  const pr = (await db.query(`insert into public.prestadores (nome, oficio, telefone, cidades) values ('João Pintor','Pintor','61 90000-0000','{Brasília,Taguatinga}') returning id, disponibilidade, nota`)).rows[0]
+  ok('facilities cadastra prestador (sem CNPJ e sem organização)', !!pr.id)
+  ok('novo prestador nasce Disponível e sem nota', pr.disponibilidade === 'Disponível' && pr.nota === null)
+  await asUser(uCom)
+  ok('comercial também cadastra', (await throws(`insert into public.prestadores (nome, oficio) values ('Maria Eletricista','Eletricista')`)) === null)
+  await asUser(uFac)
+  ok('nome vazio é recusado', (await throws(`insert into public.prestadores (nome, oficio) values ('  ','Pintor')`)) !== null)
+  ok('ofício vazio é recusado', (await throws(`insert into public.prestadores (nome, oficio) values ('Fulano','')`)) !== null)
+  ok('nota fora de 1 a 5 é recusada', (await throws(`update public.prestadores set nota = 6 where id=$1`, [pr.id])) !== null)
+  ok('nota 4 é aceita', (await throws(`update public.prestadores set nota = 4 where id=$1`, [pr.id])) === null)
+  ok('disponibilidade inválida é recusada', (await throws(`update public.prestadores set disponibilidade = 'Talvez' where id=$1`, [pr.id])) !== null)
+  ok('busca por ofício e cidade acha o prestador', (await db.query(`select count(*)::int c from public.prestadores where lower(oficio)='pintor' and cidades @> '{Taguatinga}'`)).rows[0].c === 1)
+
+  await asUser(uFin)
+  ok('financeiro lê a lista', (await db.query(`select count(*)::int c from public.prestadores`)).rows[0].c === 2)
+  ok('financeiro não cadastra', (await throws(`insert into public.prestadores (nome, oficio) values ('Teste','Pintor')`)) !== null)
+  await db.query(`update public.prestadores set nome='Alterado' where id=$1`, [pr.id])
+  await raw()
+  ok('financeiro não consegue editar (nada é alterado)', (await db.query(`select nome from public.prestadores where id=$1`, [pr.id])).rows[0].nome === 'João Pintor')
+
+  await asUser(uFac)
+  await db.query(`delete from public.prestadores where id=$1`, [pr.id])
+  await raw()
+  ok('facilities não exclui', (await db.query(`select count(*)::int c from public.prestadores where id=$1`, [pr.id])).rows[0].c === 1)
+  await asUser(uGes)
+  await db.query(`delete from public.prestadores where id=$1`, [pr.id])
+  await raw()
+  ok('gestor exclui', (await db.query(`select count(*)::int c from public.prestadores where id=$1`, [pr.id])).rows[0].c === 0)
+}
+
 // ---- migração 0006 sobre um banco que já tem dados (conversão das 8 etapas antigas para 7)
 console.log('\nMigração 0006 com dados existentes')
 {
@@ -594,6 +634,8 @@ console.log('\nMigração 0006 com dados existentes')
   ok('0007 sobre banco existente: documentos antigos continuam válidos', (await q(`select count(*)::int c from pg_constraint where conrelid='public.documentos'::regclass and conname='documentos_vinculo_chk'`))[0].c === 1)
   await old.exec(fs.readFileSync(here('../migrations/0008_operacao_facilities.sql'), 'utf8'))
   await old.exec(fs.readFileSync(here('../migrations/0009_financeiro_contratos.sql'), 'utf8'))
+  await old.exec(fs.readFileSync(here('../migrations/0010_prestadores.sql'), 'utf8'))
+  ok('0010 sobre banco existente: tabela de prestadores criada', (await q(`select count(*)::int c from information_schema.tables where table_schema='public' and table_name='prestadores'`))[0].c === 1)
   ok('0008 sobre banco existente: tabelas de operação criadas', (await q(`select count(*)::int c from information_schema.tables where table_schema='public' and table_name in ('servicos_unidade','chamados','planos_manutencao','atendimentos','garantias_vencimentos','servico_dependencias')`))[0].c === 6)
   ok('regras novas valem depois da migração', (await old.query(`insert into public.oportunidades (titulo, cliente_final_id, origem, etapa_id) select 'via woba', id, 'Woba', 1 from public.organizacoes where nome='EY' returning etapa_id`)).rows[0].etapa_id === 3)
 }

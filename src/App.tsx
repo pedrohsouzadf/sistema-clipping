@@ -7,6 +7,7 @@ import Funil from './pages/Funil'
 import Projetos from './pages/Projetos'
 import ProjetoDetalhe from './pages/ProjetoDetalhe'
 import Parceiros from './pages/Parceiros'
+import Prestadores from './pages/Prestadores'
 import OportunidadeDetalhe from './pages/OportunidadeDetalhe'
 import Organizacoes from './pages/Organizacoes'
 import Operacoes from './pages/Operacoes'
@@ -106,6 +107,7 @@ export default function App() {
           <Route path="/projetos" element={<Projetos />} />
           <Route path="/projetos/:id" element={<ProjetoDetalhe />} />
           <Route path="/parceiros" element={<Parceiros />} />
+          <Route path="/prestadores" element={<Prestadores />} />
           <Route path="/operacoes" element={<Operacoes />} />
           <Route path="/operacoes/:id" element={<OperacaoDetalhe />} />
           <Route path="/organizacoes" element={<Organizacoes />} />

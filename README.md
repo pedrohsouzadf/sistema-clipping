@@ -17,7 +17,7 @@ O menu lateral segue a arquitetura do sistema; as telas ficam em abas dentro de 
 | Clientes e contratos | Clientes · Unidades · Contratos |
 | Projetos e implantação | Projetos · Tarefas · Cotações |
 | Operação e facilities | Chamados · Serviços por unidade · Manutenção e inspeções · Garantias e vencimentos · Histórico de ocorrências |
-| Rede de parceiros | Parceiros |
+| Rede de parceiros | Fornecedores · Prestadores de serviço |
 | Financeiro por contrato | Visão por contrato · Lançamentos (só gestor e financeiro) |
 | Configurações (botão na parte de baixo da barra lateral) | Histórico de alterações · Equipe e permissões (só gestor, com cadastro de novos usuários) |
 
@@ -31,6 +31,7 @@ Configuração do menu em `src/lib/secoes.ts`.
 | **Funil** | 7 etapas (Mapeada → Qualificada → Reunião/diagnóstico → Estudo de viabilidade → Proposta enviada → Negociação → Ganha/perdida), kanban com arrastar e soltar, playbook por etapa. Campos da oportunidade: tipo de serviço, valor, probabilidade, fechamento esperado, concorrentes, riscos, tipo de imóvel, necessidade de obra, regra de relacionamento e aprovação da abordagem. |
 | **Projetos** | Gerado a partir da oportunidade ganha (ou criado à mão). 7 etapas padrão com critérios de entrada e saída; **concluída ≠ aprovada** (aprovação formal registra quem e quando). Tarefas, parceiros do projeto com valor cotado × contratado e avaliação, riscos/pendências/decisões/mudanças de escopo, documentos e histórico. |
 | **Tarefas** | Sempre ligadas a uma oportunidade, projeto, empresa ou contato. Responsável, prioridade, vencimento, bloqueio por outra tarefa, tipo "aprovação", evidência de conclusão. Visões: minhas, equipe, atrasadas por responsável. |
+| **Prestadores** | Lista de profissionais e autônomos por ofício e cidade (pintor, eletricista, bombeiro hidráulico…), sem exigir CNPJ: contato, disponibilidade, nota de 1 a 5 e valor de referência em texto livre. Todos leem; gestor, comercial, projetos, engenharia e facilities editam; só o gestor exclui. |
 | **Parceiros** | Perfil de homologação de cada fornecedor: cidades, especialidades, disponibilidade, mobilização, validade da documentação. Busca combinada e desempenho por projeto (nota média, prazo, retrabalho). |
 | **Empresas e contatos** | Registro único (CNPJ não duplica), razão social, site, responsável, origem, necessidades, próximo passo, último contato automático. Contatos de networking com continuidade em 2 dias. |
 | **Documentos** | Arquivo (Storage) ou link, tipo, versão, status de aprovação, validade. Em empresas, oportunidades e projetos. |
@@ -66,9 +67,9 @@ Importe a pasta `app/` (ou o repositório com *Root Directory* = `app`), framewo
 `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`. O `vercel.json` já cuida das rotas.
 
 ## Testes
-`npm run test:db` — roda as migrations + seed num Postgres em memória (PGlite) e verifica 194 regras: trava Woba, etapas, comissão,
+`npm run test:db` — roda as migrations + seed num Postgres em memória (PGlite) e verifica 209 regras: trava Woba, etapas, comissão,
 fechamento, propostas, permissões por papel, projetos e aprovação de etapas, tarefas, parceiros, documentos, histórico, e a conversão
-dos dados existentes na 0006, clientes, unidades e contratos (0007), operação e facilities (0008) e financeiro por contrato (0009).
+dos dados existentes na 0006, clientes, unidades e contratos (0007), operação e facilities (0008) financeiro por contrato (0009) e prestadores de serviço (0010).
 `npm run typecheck` e `npm run build` validam o front.
 
 ## Estrutura
@@ -80,6 +81,7 @@ supabase/migrations/0006_modelo_fase1.sql  funil de 7 etapas, papéis, projetos,
 supabase/migrations/0007_*.sql             status de relacionamento, decisores, unidades, contratos e vínculos
 supabase/migrations/0008_*.sql             serviços por unidade, chamados com SLA, planos de manutenção, atendimentos e aceite, garantias
 supabase/migrations/0009_*.sql             lançamentos financeiros por contrato (faturamento, recebimento, custo, investimento)
+supabase/migrations/0010_*.sql             prestadores de serviço (pintor, eletricista, bombeiro hidráulico…)
 supabase/seed.sql                          organizações iniciais
 supabase/tests/regras.test.mjs             teste das regras de negócio
 src/lib/secoes.ts, components/SecaoNav.tsx     menu lateral e abas por área
